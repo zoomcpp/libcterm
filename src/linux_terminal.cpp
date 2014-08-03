@@ -6,15 +6,15 @@
 //==============================================================================
 // PIMPL
 //==============================================================================
-struct LinuxTerminal::P {
+struct LinuxTerminal::Self {
   //*** construction
-  P(LinuxTerminal& o) : owner(o) {
+  Self(LinuxTerminal& o) : owner(o) {
   }
   //*** private data 
   LinuxTerminal& owner;
   termio saved_term_params;
   termio current_term_params;
-
+  LinuxTerminal::window_set_type window_set;
   //*** private operations
   void terminal_params_save();
   void terminal_params_restore();
@@ -24,22 +24,24 @@ struct LinuxTerminal::P {
 // public operations
 //==============================================================================
 
-LinuxTerminal::LinuxTerminal() : p(*this) {
+LinuxTerminal::LinuxTerminal() : self(new Self(*this)) {
   // save current terminal params
-  p->terminal_params_save();
+  self->terminal_params_save();
 }
 
 LinuxTerminal::~LinuxTerminal() {
   // restore terminal params
-  p->terminal_params_restore();
+  self->terminal_params_restore();
 }
 
 void LinuxTerminal::v_set_mode(const Mode& m) {
-  // get the current mode 
+  // set the current mode 
   switch(m) {
   case Mode::Raw:
+//    set_raw_mode();
     break;
   case Mode::Processed:
+//    set_processed_mode();
     break;
   };
 }
@@ -57,18 +59,25 @@ Rect LinuxTerminal::v_get_rect() const {
               static_cast<int>(sz.ws_col) - 1,
               static_cast<int>(sz.ws_row) - 1);
 }
+
+LinuxTerminal::window_set_type& LinuxTerminal::v_window_set() {
+  return self->window_set;
+}
+
+const LinuxTerminal::window_set_type& LinuxTerminal::vconst_window_set() const {
+  return self->window_set;
+}
 //==============================================================================
 // PRIVATE IMPLEMENTATION
 //==============================================================================
-void LinuxTerminal::P::terminal_params_save() {
+void LinuxTerminal::Self::terminal_params_save() {
   if(ioctl(STDIN_FILENO, TCGETA, &(saved_term_params)) == -1) {
     throw std::runtime_error("could not save TTY state");
   }
 }
 
-void LinuxTerminal::P::terminal_params_restore() {
+void LinuxTerminal::Self::terminal_params_restore() {
   if(ioctl(STDIN_FILENO, TCSETA, &(saved_term_params)) == -1) {
     throw std::runtime_error("could not restore TTY state");
   }
 }
-

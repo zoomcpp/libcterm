@@ -19,6 +19,8 @@ private:
 
 class Rect {
 public:
+  Rect() {
+  }
   Rect(const Point& p1, const Point& p2)
   : x1_(p1.x()), x2_(p2.x()), y1_(p1.y()), y2_(p2.y()) {
   }
@@ -57,11 +59,43 @@ public:
   int height() const {
     return bottom() - top() + 1;
   }
+
+  void top(const int& t) {
+    if(y1_ < y2_) {
+      y1_ = t;
+    } else {
+      y2_ = t;
+    }
+  }
+
+  void bottom(const int& b) {
+    if(y1_ > y2_) {
+      y1_ = b;
+    } else {
+      y2_ = b;
+    }
+  }
+
+  void left(const int& l) {
+    if(x1_ < x2_) {
+      x1_ = l;
+    } else {
+      x2_ = l;
+    }
+  }
+
+  void right(const int& r) {
+    if(x1_ > x2_) {
+      x1_ = r;
+    } else {
+      x2_ = r;
+    }
+  }
 private:
-  int x1_;
-  int x2_;
-  int y1_;
-  int y2_;
+  int x1_ = 0;
+  int x2_ = 0;
+  int y1_ = 0;
+  int y2_ = 0;
  
 };
 

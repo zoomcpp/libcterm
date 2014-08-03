@@ -9,10 +9,14 @@ public:
   LinuxTerminal();
   ~LinuxTerminal();
 private:
-  virtual Rect v_get_rect() const override;
-  virtual void v_set_mode(const Mode&) override;
-  struct P;
-  pimpl<struct P> p;
+  typedef Terminal::window_set_type window_set_type;
+  
+  Rect v_get_rect() const override;
+  void v_set_mode(const Mode&) override;
+  const window_set_type& vconst_window_set() const override;
+  window_set_type& v_window_set() override;
+  struct Self;
+  std::unique_ptr<Self> self;
 };
 
 
