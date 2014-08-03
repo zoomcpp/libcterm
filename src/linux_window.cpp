@@ -1,5 +1,6 @@
 #include "linux_window.hpp"
 #include "linux_cursor.hpp"
+#include "linux_termcode.hpp"
 #include "terminal.hpp"
 #include <iostream>
 
@@ -11,7 +12,7 @@ LinuxWindow::LinuxWindow(const Terminal& owner) : LinuxWindow(owner, owner.rect(
 }
 
 LinuxWindow::LinuxWindow(const Terminal& o, const Rect& r) 
-: Window(o, r), owner_(o), rect_(r), cursor_(*this) {
+: Window(o, r), owner_(o), rect_(r), cursor_(*this), buffer_(r.width(), r.height()) {
 }
 
 LinuxWindow::~LinuxWindow() {
@@ -42,25 +43,13 @@ Cursor& LinuxWindow::v_get_cursor() {
 }
 
 void LinuxWindow::v_refresh() {
-  using namespace std;
-  Rect target = rect();
-  if(target.top() < terminal().rect().top()) {
-    target.top(terminal().rect().top());
-  }
-  if(target.left() < terminal().rect().left()) {
-    target.left(terminal().rect().left());
-  }
-  if(target.bottom() > terminal().rect().bottom()) {
-    target.bottom(terminal().rect().bottom());
-  }
-  if(target.right() > terminal().rect().right()) {
-    target.right(terminal().rect().right());
-  }
-  for(int row = target.top(); row <= target.bottom(); ++row) {
-    for(int col = target.left(); col <= target.right(); ++col) {
-      cout << '.';
-    }
-  }
+  // figure out clipping rectangle
+  Rect clip(
+    rect().left(),
+    rect().top(),
+    terminal.rect().right() - rect().left();
+    
+  );
 }
 
 void LinuxWindow::v_fill(const char& c) {
