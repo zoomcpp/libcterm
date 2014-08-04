@@ -17,6 +17,9 @@ private:
   int y_;
 };
 
+class Offset : public virtual Point {
+};
+
 class Rect {
 public:
   Rect() {

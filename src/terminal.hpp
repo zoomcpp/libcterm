@@ -1,11 +1,11 @@
 #ifndef terminal_hpp_20140728_1023_53
 #define terminal_hpp_20140728_1023_53
 
-#include "window.hpp"
 #include "metrics.hpp"
 #include <memory>
 #include <set>
 
+class Window;
 
 class Terminal {
 public:

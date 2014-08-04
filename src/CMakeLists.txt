@@ -4,7 +4,6 @@ set(sources
   linux_terminal.cpp 
   linux_window.cpp 
   linux_cursor.cpp
-  linux_window_buffer.cpp
 )
 
 add_library(cterm ${sources})
