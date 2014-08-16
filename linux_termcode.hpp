@@ -33,6 +33,13 @@ namespace xterm {
   inline std::string color(const Colors& color_enum) {
     return color(static_cast<int>(color_enum)); 
   }
+
+  inline std::string refresh() {
+    using namespace std;
+    stringstream s;
+    s << csi() << "7t";
+    return s.str();
+  }
 };
 
 #endif//linux_termcode_hpp_20140803_1102_44

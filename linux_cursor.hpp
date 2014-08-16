@@ -2,7 +2,6 @@
 #define linux_cursor_hpp_20140728_1932_35
 
 #include "cursor.hpp"
-#include "pimpl.hpp"
 
 class LinuxWindow;
 

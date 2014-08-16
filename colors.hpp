@@ -15,6 +15,8 @@ enum class Colors : int {
   fgCyan          = 36,          
   fgWhite         = 37,         
   fgDefault       = 39,   
+  
+  fgYellow        = fgBrown,
 
   bgBlack         = 40,
   bgRed           = 41,    
@@ -25,6 +27,8 @@ enum class Colors : int {
   bgCyan          = 46,          
   bgWhite         = 47,         
   bgDefault       = 49,   
+
+  bgYellow        = bgBrown
 };
 
 #endif//colors_hpp_20140803_1725_30

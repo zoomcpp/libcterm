@@ -8,4 +8,3 @@ set(sources
 
 add_library(cterm ${sources})
 
-add_executable(ctermx main.cpp ${sources})

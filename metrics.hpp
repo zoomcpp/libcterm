@@ -1,6 +1,8 @@
 #ifndef metrics_hpp_20140728_1451_10
 #define metrics_hpp_20140728_1451_10
 
+#include <algorithm>
+
 class Point {
 public:
   Point(const Point& p)
@@ -24,6 +26,14 @@ class Rect {
 public:
   Rect() {
   }
+
+  Rect(const Rect& src) : Rect(src.x1_, src.y1_, src.x2_, src.y2_) {
+    
+  }
+
+  Rect(const Rect&& src) {
+  }
+
   Rect(const Point& p1, const Point& p2)
   : x1_(p1.x()), x2_(p2.x()), y1_(p1.y()), y2_(p2.y()) {
   }
@@ -33,19 +43,19 @@ public:
   }
 
   const int& top() const {
-    return y1_ < y2_ ? y1_ : y2_;
+    return std::min(y1_, y2_);
   }
 
   const int& bottom() const {
-    return y1_ > y2_ ? y1_ : y2_;
+    return std::max(y1_, y2_);
   }
 
   const int& left() const {
-    return x1_ < x2_ ? x1_ : x2_;
+    return std::min(x1_, x2_);
   }
 
   const int& right() const {
-    return x1_ > x2_ ? x1_ : x2_;
+    return std::max(x1_, x2_);
   }
 
   Point top_left() const {

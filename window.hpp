@@ -3,6 +3,7 @@
 
 #include "metrics.hpp"
 #include "terminal.hpp"
+#include <iostream>
 
 class Cursor;
 
@@ -10,13 +11,16 @@ class Cursor;
 class Window {
 public:
   Window(const Terminal&, const Rect&) {}
-  virtual ~Window() {}
+  virtual ~Window() { 
+    using namespace std;
+    cout << "~Window()" << endl; 
+  }
   const Rect& rect() const { return vconst_get_rect(); }
   Rect clip() const { return v_clip(); }
   const Terminal& owner() const { return vconst_get_owner(); }
   const Terminal& terminal() const { return vconst_get_owner(); }
   Cursor& cursor() { return v_get_cursor(); }
-  std::string render() { return v_render(); }
+  std::string render() const { return v_render(); }
   
   Window& fill(const char& c) {
     v_fill(c);
@@ -56,30 +60,50 @@ public:
     return *this;
   }
 
+  Window& scroll_down(const int& n) {
+    v_scroll_down(n);
+    return *this;
+  }
+
+  Window& scroll_down() {
+    return scroll_down(1);
+  }
+
   Window& clear() {
-    v_clear();
+    v_fill(0);
     return *this;
   }
 private:
-  virtual void v_clear() = 0;
   virtual Cursor& v_get_cursor() = 0;
   virtual Rect& v_get_rect() = 0;
   virtual const Rect& vconst_get_rect() const = 0;
   virtual const Terminal& vconst_get_owner() const = 0;
+  virtual const Terminal& v_get_owner() = 0;
   virtual std::string v_render() const = 0;
   virtual void v_fill(const char& c) = 0;
   virtual void v_fill(const char& c, const std::string& attr) = 0;
   virtual void v_write(const int&, const int&, const std::string&) = 0;
   virtual void v_write(const int&, const int&, const std::string&, const std::string&) = 0; 
   virtual void v_scroll_up(const int& n) = 0;
-  Rect v_clip() const {    
+  virtual void v_scroll_down(const int& n) = 0;
+
+  virtual Rect v_clip() const {
+    Rect term_rect = terminal().rect();
     return Rect(
-      rect().left() > terminal().rect().left() ? rect().left() : terminal().rect().left(),
-      rect().top() > terminal().rect().top() ? rect().top() : terminal().rect().top(),
-      rect().right() < terminal().rect().right() ? rect().right() : terminal().rect().right(),
-      rect().bottom() < terminal().rect().bottom() ? rect().bottom() : terminal().rect().bottom()
+      std::max(rect().left(), term_rect.left()),
+      std::max(rect().top(), term_rect.top()),
+      std::min(rect().right(), term_rect.right()),
+      std::min(rect().bottom(), term_rect.bottom())
     );
   }
 };
 
+inline std::ostream& operator<<(std::ostream& strm, const Window& w) {
+  return strm << w.render() << std::endl;
+}
+
+inline std::ostream& operator<<(std::ostream& strm, std::shared_ptr<Window> w) {
+  return strm << *w;
+}
+  
 #endif//window_hpp_20140728_1420_22

@@ -3,7 +3,6 @@
 
 #include "metrics.hpp"
 #include <memory>
-#include <set>
 
 class Window;
 
@@ -12,8 +11,9 @@ public:
   /*! Default constructor. */
   Terminal() { }
   /*! Destructor. */
-  virtual ~Terminal() { }
-  /*! Terminal modes. */
+  virtual ~Terminal() { 
+  }
+  /* Terminal modes. */
   enum class Mode {
     Raw,
     Processed
@@ -29,26 +29,18 @@ public:
   }
 
   template<class window_type, class...Args>
-  std::weak_ptr<Window> create(Args&&...args) {
-    auto newwin = std::make_shared<window_type>(*this, args...);
-    v_window_set().insert(newwin);
-    return std::weak_ptr<Window>(newwin);
-  }
-
-  typedef std::set<std::shared_ptr<Window>> window_set_type;
-  const window_set_type& window_set() const {
-    return vconst_window_set();
+  std::unique_ptr<Window> create(Args&&...args) {
+    std::unique_ptr<Window> wnd(new window_type(*this, std::forward<Args>(args)...));
+    return std::move(wnd);
   }
 
 private:
   virtual void v_set_mode(const Mode& m) = 0;
   virtual Rect v_get_rect() const = 0;
-  virtual const window_set_type& vconst_window_set() const = 0;
-  virtual window_set_type& v_window_set() = 0;
 };
 
 
-inline bool operator<(const std::shared_ptr<Window>& lhs, const std::shared_ptr<Window>& rhs) {
+inline bool operator<(const std::unique_ptr<Window>& lhs, const std::unique_ptr<Window>& rhs) {
   return lhs.get() < rhs.get();
 }
 #endif//terminal_hpp_20140728_1023_53
